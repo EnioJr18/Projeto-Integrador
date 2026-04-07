@@ -75,3 +75,9 @@ if os.name == 'nt':
 
     GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal312.dll'
     GEOS_LIBRARY_PATH = r'C:\OSGeo4W\bin\geos_c.dll'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
