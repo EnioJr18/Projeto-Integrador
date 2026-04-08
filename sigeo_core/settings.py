@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'django.contrib.gis',
+    'django_filters',
     'apps.users',
     'apps.events',
     'apps.impact',
@@ -75,3 +76,8 @@ if os.name == 'nt':
 
     GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal312.dll'
     GEOS_LIBRARY_PATH = r'C:\OSGeo4W\bin\geos_c.dll'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
+}
