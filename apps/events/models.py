@@ -30,13 +30,13 @@ class EventoSocial(models.Model):
 
     criado_em = models.DateTimeField(auto_now_add=True)
 
-    # organizador = models.ForeignKey(
-    #     'auth.User',
-    #     on_delete=models.CASCADE,
-    #     null=True,
-    #     blank=True,
-    #     related_name='eventos',
-    # )  # aguardando módulo de usuários (Guilherme)
+    organizador = models.ForeignKey(
+        'auth.User',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='eventos',
+    )
 
     class Meta:
         verbose_name = 'Evento Social'
