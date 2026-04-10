@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.gis.db import models
 
 
@@ -16,11 +17,7 @@ class EventoSocial(models.Model):
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
 
-    categoria = models.CharField(
-        max_length=50,
-        choices=CATEGORIA_CHOICES,
-        default='outro',
-    )
+    categoria = models.CharField(max_length=50, choices=CATEGORIA_CHOICES, default='outro')
 
     vagas = models.PositiveIntegerField()
 
@@ -30,13 +27,7 @@ class EventoSocial(models.Model):
 
     criado_em = models.DateTimeField(auto_now_add=True)
 
-    # organizador = models.ForeignKey(
-    #     'auth.User',
-    #     on_delete=models.CASCADE,
-    #     null=True,
-    #     blank=True,
-    #     related_name='eventos',
-    # )  # aguardando módulo de usuários (Guilherme)
+    organizador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='eventos_organizados')
 
     class Meta:
         verbose_name = 'Evento Social'
