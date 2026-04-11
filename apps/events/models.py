@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.gis.db.models import PointField
 
 
 class EventoSocial(models.Model):
@@ -36,3 +37,35 @@ class EventoSocial(models.Model):
 
     def __str__(self):
         return f'{self.titulo} ({self.get_categoria_display()})'
+    
+
+class Inscricao(models.Model):
+    
+    STATUS_CHOICES = (
+        ('confirmada', 'Confirmada'),
+        ('cancelada', 'Cancelada'),
+        ('pendente', 'Pendente (Lista de Espera)'),
+    )
+
+    participante = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='minhas_inscricoes'
+    )
+    
+    evento = models.ForeignKey(
+        EventoSocial, 
+        on_delete=models.CASCADE, 
+        related_name='inscricoes_do_evento'
+    )
+    
+    data_inscricao = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='confirmada')
+
+    class Meta:
+        unique_together = ['participante', 'evento']
+        verbose_name = 'Inscrição'
+        verbose_name_plural = 'Inscrições'
+
+    def __str__(self):
+        return f"{self.participante.username} -> {self.evento.titulo} ({self.status})"

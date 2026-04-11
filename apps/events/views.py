@@ -1,9 +1,10 @@
-from rest_framework import generics, filters
+from rest_framework import generics, filters, generics
 from django_filters.rest_framework import DjangoFilterBackend
-from .models import EventoSocial
-from .serializers import EventoSocialSerializer
+from .models import EventoSocial, Inscricao
+from .serializers import EventoSocialSerializer, InscricaoSerializer
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
+from rest_framework.permissions import IsAuthenticated
 
 
 class EventoSocialListCreateView(generics.ListCreateAPIView):
@@ -34,3 +35,16 @@ class EventoSocialListCreateView(generics.ListCreateAPIView):
 class EventoSocialDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = EventoSocial.objects.all()
     serializer_class = EventoSocialSerializer
+
+
+class InscreverEventoView(generics.CreateAPIView):
+    queryset = Inscricao.objects.all()
+    serializer_class = InscricaoSerializer
+    permission_classes = [IsAuthenticated]
+
+class MinhasInscricoesView(generics.ListAPIView):
+    serializer_class = InscricaoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Inscricao.objects.filter(participante=self.request.user)
