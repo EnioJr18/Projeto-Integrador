@@ -11,3 +11,5 @@ __pycache__/
 
 # Banco de dados local (se usarem sqlite para testes)
 db.sqlite3
+
+node_modules
