@@ -1,7 +1,7 @@
 # 🌍 SIGEO-PS: Sistema de Informação Geográfica de Eventos
 
 ![Status](https://img.shields.io/badge/Status-Sprint_2_Concluída-yellow)
-![Python](https://img.shields.io/badge/Python-3.11+-blue)
+![Python](https://img.shields.io/badge/Python-3.14+-blue)
 ![Django](https://img.shields.io/badge/Django-5.0+-green)
 ![PostGIS](https://img.shields.io/badge/PostGIS-Geoespacial-1572B6)
 ![Postgres](https://img.shields.io/badge/PostgreSQL-Cloud-336791)
@@ -35,7 +35,7 @@ Este projeto abriga a solução de Backend (API REST) para o SIGEO-PS. O sistema
 ## 🛠 Tecnologias Utilizadas
 
 ### Backend (API)
-- **Linguagem:** Python 3.11+
+- **Linguagem:** Python 3.14+
 - **Framework:** Django & Django REST Framework (DRF)
 - **Banco de Dados:** PostgreSQL (Via Neon Tech - Serverless)
 - **Motor Espacial:** GeoDjango & PostGIS
@@ -46,7 +46,7 @@ Este projeto abriga a solução de Backend (API REST) para o SIGEO-PS. O sistema
 ## 🚀 Como Rodar o Projeto
 
 ### Pré-requisitos
-* Python 3.11+ instalado.
+* Python 3.14+ instalado.
 * Conta no [Neon.tech](https://neon.tech) (com a extensão PostGIS habilitada).
 
 ### 1️⃣ Configurando o Backend (Django)
