@@ -96,13 +96,13 @@ Para rodar os testes automatizados da API sem dropar o banco em nuvem, utilize o
 python manage.py test apps.events --keepdb
 ```
 
-📝 Licença
+## 📝 Licença
 Este projeto está sob a licença MIT.
 
-🤝 Contribuição
+## 🤝 Contribuição
 Contribuições são bem-vindas! Sinta-se à vontade para abrir issues ou enviar pull requests focados na melhoria da arquitetura REST ou otimização de consultas geográficas.
 
-👨‍💻 Autores
+## 👨‍💻 Autores
 O ecossistema SIGEO-PS está sendo construído em conjunto pelas equipes de Backend e Frontend:
 
 - Backend (GeoDjango, Inscrições e Infraestrutura): Enio Jr.
