@@ -5,7 +5,7 @@ from .models import EventoSocial, Inscricao
 from .serializers import EventoSocialSerializer, InscricaoSerializer
 from django.contrib.gis.geos import Point
 from django.contrib.gis.measure import D
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 
@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 class EventoSocialListCreateView(generics.ListCreateAPIView):
     queryset = EventoSocial.objects.all()
     serializer_class = EventoSocialSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['categoria']
     search_fields = ['titulo', 'descricao']
@@ -38,6 +39,7 @@ class EventoSocialListCreateView(generics.ListCreateAPIView):
 class EventoSocialDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = EventoSocial.objects.all()
     serializer_class = EventoSocialSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
 
 class InscreverEventoView(generics.CreateAPIView):
