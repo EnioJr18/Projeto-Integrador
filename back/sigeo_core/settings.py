@@ -14,10 +14,10 @@ env = environ.Env(
         'postgres://postgres:postgres@127.0.0.1:5432/sigeo_ps?sslmode=disable',
     ),
 )
-environ.Env.read_env(os.path.join(BASE_DIR.parent, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [

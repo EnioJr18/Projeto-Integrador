@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { createEvento, inscreverEvento, listEventos, loginUser, registerUser } from './api'
+import { createEvento, inscreverEvento, listEventos, loginUser, registerUser, getProfile } from './api'
 import AddressAutocomplete from './AddressAutocomplete.jsx'
 import CreateEventPage from './CreateEventPage.jsx'
 import LoginPage from './LoginPage.jsx'
@@ -44,6 +44,23 @@ function App() {
 
   // NOVO: Verifica se o usuário está logado lendo o localStorage
   const isAuthenticated = !!localStorage.getItem('accessToken') || !!localStorage.getItem('token')
+
+  // Variável para guardar o nome do usuário
+  const [userName, setUserName] = useState('')
+
+  // Busca o perfil do usuário se ele estiver logado
+  useEffect(() => {
+    if (isAuthenticated) {
+      getProfile()
+        .then((data) => {
+          // Usa o username ou first_name que vier da sua API
+          setUserName(data.username || data.first_name || 'Usuário')
+        })
+        .catch(() => {
+          console.log('Erro ao carregar os dados do usuário')
+        })
+    }
+  }, [isAuthenticated])
 
   useEffect(() => {
     const handlePopState = () => setPathname(window.location.pathname)
@@ -286,10 +303,13 @@ function App() {
 
           <div className="nav-actions">
             {isAuthenticated ? (
-              // Mostra Sair se estiver logado
-              <a className="login-link" href="/" onClick={handleLogout} style={{ color: '#d9534f' }}>
-                Sair
-              </a>
+              // Mostra o Nome e o botão de Sair se estiver logado
+              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                <span style={{ fontWeight: '500', color: '#555' }}>Olá, {userName}!</span>
+                <a className="login-link" href="/" onClick={handleLogout} style={{ color: '#d9534f' }}>
+                  Sair
+                </a>
+              </div>
             ) : (
               <>
                 <a className="btn btn-light btn-small" href="/cadastro">
