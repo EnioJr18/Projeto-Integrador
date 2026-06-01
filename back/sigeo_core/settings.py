@@ -146,7 +146,17 @@ SIMPLE_JWT = {
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
-CORS_ALLOWED_ORIGINS = True
+# Libera o acesso para qualquer origem (ideal para o MVP não dar dor de cabeça)
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Se quiser ser mais seguro e restrito (opcional), use esta configuração ao invés da de cima:
+# CORS_ALLOWED_ORIGINS = [
+#     "https://sigeo-ps.vercel.app",  <-- Coloque a SUA URL da Vercel aqui
+#     "http://localhost:5173",
+# ]
+
+# Permite que o front-end envie cookies ou tokens de autenticação
+CORS_ALLOW_CREDENTIALS = True
 
 
 # Configuração do GeoDjango para a nuvem (Railway)
