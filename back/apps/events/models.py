@@ -18,6 +18,8 @@ class EventoSocial(models.Model):
     titulo = models.CharField(max_length=200)
     descricao = models.TextField()
 
+    endereco = models.CharField(max_length=255, blank=True)
+
     categoria = models.CharField(max_length=50, choices=CATEGORIA_CHOICES, default='outro')
 
     vagas = models.PositiveIntegerField()
@@ -29,6 +31,10 @@ class EventoSocial(models.Model):
     criado_em = models.DateTimeField(auto_now_add=True)
 
     organizador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='eventos_organizados')
+
+    link_comprovacao = models.URLField(max_length=500, blank=True, null=True)
+
+    cancelado = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = 'Evento Social'

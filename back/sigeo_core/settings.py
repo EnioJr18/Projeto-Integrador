@@ -6,11 +6,18 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
+env = environ.Env(
+    DEBUG=(bool, True),
+    SECRET_KEY=(str, 'dev-insecure-secret-key-change-me'),
+    DATABASE_URL=(
+        str,
+        'postgres://postgres:postgres@127.0.0.1:5432/sigeo_ps?sslmode=disable',
+    ),
+)
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env.bool('DEBUG', default=False)
+DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
@@ -29,9 +36,11 @@ INSTALLED_APPS = [
     'apps.ai_integration',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -74,11 +83,41 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 if os.name == 'nt':
-    if sys.version_info >= (3, 8):
-        os.add_dll_directory(r'C:\OSGeo4W\bin')
+    candidate_dirs = [Path(r'C:\OSGeo4W\bin')]
+    candidate_dirs.extend(Path(r'C:\Program Files').glob('QGIS*\bin'))
+    candidate_dirs.extend(Path(r'C:\Program Files').glob(r'QGIS*\apps\qgis\bin'))
 
-    GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal312.dll'
-    GEOS_LIBRARY_PATH = r'C:\OSGeo4W\bin\geos_c.dll'
+    existing_dirs = [path for path in candidate_dirs if path.exists()]
+
+    if existing_dirs and sys.version_info >= (3, 8):
+        for path in existing_dirs:
+            os.add_dll_directory(str(path))
+
+    gdal_dll = next(
+        (
+            dll
+            for path in existing_dirs
+            for dll in path.glob('gdal*.dll')
+            if dll.exists()
+        ),
+        None,
+    )
+
+    geos_dll = next(
+        (
+            dll
+            for path in existing_dirs
+            for dll in [path / 'geos_c.dll']
+            if dll.exists()
+        ),
+        None,
+    )
+
+    if gdal_dll:
+        GDAL_LIBRARY_PATH = str(gdal_dll)
+
+    if geos_dll:
+        GEOS_LIBRARY_PATH = str(geos_dll)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -103,3 +142,8 @@ SIMPLE_JWT = {
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]

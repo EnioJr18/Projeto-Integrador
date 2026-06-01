@@ -1,13 +1,17 @@
-# Ambientes virtuais
+# Pastas e arquivos de ambiente
+.env
 venv/
 env/
-
-# Arquivos compilados do Python
-*.pyc
 __pycache__/
+*.pyc
 
-# Variáveis de ambiente (Segurança)
-.env
+# Node
+node_modules/
+dist/
+build/
+.next/
+.DS_Store
 
-# Banco de dados local (se usarem sqlite para testes)
+# Logs e arquivos de banco de dados
+*.log
 db.sqlite3
