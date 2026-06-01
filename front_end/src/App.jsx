@@ -6,6 +6,7 @@ import LoginPage from './LoginPage.jsx'
 import RegisterPage from './RegisterPage.jsx'
 import PainelOrganizador from './PainelOrganizador.jsx'
 import EventMap from './EventMap.jsx'
+import DashboardImpacto from './DashboardImpacto.jsx'
 import './App.css'
 
 const CATEGORY_LABELS = {
@@ -161,12 +162,11 @@ function App() {
           setInscricoesConfirmadas((prev) => prev.filter((id) => id !== eventoId));
           alert("Inscrição cancelada com sucesso!");
         } catch (error) {
-          // AQUI ESTÁ A MUDANÇA: Vamos alertar o "error" real, não o texto padrão
           alert("Erro no servidor: " + error.message);
-          console.error("Erro completo:", error); // Isso vai mandar o erro real para o console
+          console.error("Erro completo:", error); 
         }
       }
-    } else { // <--- O erro estava exatamente aqui, faltava fechar a chave acima!
+    } else { 
       try {
         await inscreverEvento(eventoId);
         setInscricoesConfirmadas((prev) =>prev.includes(eventoId) ? prev : [...prev, eventoId]);
@@ -214,7 +214,7 @@ function App() {
     setSelectedCategory('')
     setSubmittedSearch('')
     setSearchValue('')
-    setMostrarApenasMinhas(false) // Limpa o filtro de inscrições também
+    setMostrarApenasMinhas(false) 
     document.querySelector('#eventos')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
@@ -275,6 +275,10 @@ function App() {
     return <RegisterPage onSubmit={handleRegister} registerError={registerError} registerSuccess={registerSuccess} />
   }
 
+  if (pathname === '/dashboard') {
+    return <DashboardImpacto />
+  }
+
   return (
     <>
       <header className="site-header">
@@ -292,6 +296,7 @@ function App() {
             <a href="#mapa">Explorar</a>
             <a href="#categorias">Categorias</a>
             <a href="#eventos">Eventos</a>
+            <a href="/dashboard" onClick={(e) => { e.preventDefault(); setPathname('/dashboard'); }}>Impacto Social</a>
             <a href="#sobre">Sobre</a>
           </div>
 
@@ -299,6 +304,22 @@ function App() {
             {isAuthenticated ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '15px', whiteSpace: 'nowrap' }}>
                 
+                {/* --- NOVA BADGE DE GAMIFICAÇÃO --- */}
+                <span style={{ 
+                  background: '#fbbf24', 
+                  color: '#78350f', 
+                  padding: '5px 10px', 
+                  borderRadius: '20px', 
+                  fontSize: '0.85rem', 
+                  fontWeight: 'bold', 
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}>
+                  🏅 Cidadão Solidário
+                </span>
+
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
                   <span style={{ fontWeight: '600', color: '#333', fontSize: '0.95rem' }}>
                     Olá, {userName}!
@@ -317,7 +338,7 @@ function App() {
                     </span>
                   )}
                 </div>
-
+                
                 <a className="login-link" href="/" onClick={handleLogout} style={{ color: '#d9534f', marginLeft: '10px' }}>
                   Sair
                 </a>
@@ -537,6 +558,28 @@ function App() {
                       >
                         {isConfirmed && !isDisabled ? 'Cancelar Inscrição ❌' : (evento.cancelado || eventoEncerrado) ? 'Inscrições Indisponíveis' : 'Participar'}
                       </button>
+
+                      {/* --- NOVO BOTÃO DE AVALIAÇÃO MOCKADO --- */}
+                      <button 
+                        onClick={() => alert("⭐ A avaliação estará disponível no seu perfil após a data de encerramento do evento. (Funcionalidade em desenvolvimento - Sprint 3)")}
+                        style={{ 
+                          background: '#f8fafc', 
+                          color: '#475569', 
+                          border: '1px solid #cbd5e1',
+                          padding: '8px 15px', 
+                          borderRadius: '8px', 
+                          cursor: 'pointer', 
+                          fontWeight: 'bold',
+                          width: '100%',
+                          marginTop: '10px',
+                          transition: 'all 0.2s'
+                        }}
+                        onMouseOver={(e) => e.target.style.background = '#f1f5f9'}
+                        onMouseOut={(e) => e.target.style.background = '#f8fafc'}
+                      >
+                        ⭐ Avaliar Evento
+                      </button>
+                      
                     </div>
                   </article>
                 )
