@@ -76,24 +76,34 @@
     background: var(--green);
   }
 
-  .nav-links,
-  .nav-actions {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-    font-size: 14px;
-  }
+  /* 1. Ajuste da barra de navegação no topo (um pouco menor e centralizada) */
+.nav-links {
+  display: flex;
+  gap: 25px; /* Diminuímos de 35px para 25px */
+  flex: 1; /* Mantém centralizado */
+  justify-content: center;
+  align-items: center;
+}
 
-  .nav-links a,
-  .login-link {
-    color: #334155;
-  }
+.nav-links a {
+  font-size: 0.95rem; /* Fonte um pouco mais delicada */
+  font-weight: 600;
+  color: #334155;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
 
-  .nav-links a:hover,
-  .login-link:hover,
-  .events-head a:hover {
-    color: var(--green-dark);
-  }
+.nav-links a:hover {
+  color: #10b981;
+}
+
+/* 2. Arrumando a bagunça do lado direito (Perfil + Botões) */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px; /* Espaço entre o bloco de perfil e o botão cadastrar */
+  white-space: nowrap; /* MÁGICA: Impede que os botões quebrem para a linha de baixo! */
+}
 
   .btn {
     display: inline-flex;
@@ -1893,4 +1903,212 @@
   .login-card-links {
     flex-direction: column;
   }
+}
+
+/* ========================================================
+   MAPA MODERNO TIPO iFOOD / UBER (SEM QUEBRAR O PROJETO) 
+   ======================================================== */
+
+.ifood-map-container {
+  position: relative;
+  width: 100%;
+  height: 600px; /* Ou mude para 100vh se quiser tela inteira mesmo */
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.leaflet-fullscreen {
+  width: 100%;
+  height: 100%;
+  z-index: 1; /* Fica no fundo */
+}
+
+/* OVERLAYS E BARRA DE BUSCA */
+.map-search-bar {
+  position: absolute;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 400; /* Leaflet usa z-index altos */
+  width: 90%;
+  max-width: 400px;
+}
+
+.map-search-bar input {
+  width: 100%;
+  padding: 12px 20px;
+  border-radius: 30px;
+  border: none;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  font-size: 1rem;
+  outline: none;
+  background: white;
+}
+
+/* BOTÃO DE GPS FLUTUANTE (AGORA SEGUINDO A ABA) */
+.gps-fab {
+  position: absolute;
+  top: -65px; /* Isso puxa ele para "sentar" exatamente em cima da borda da aba */
+  right: 15px;
+  z-index: 400;
+  background: white;
+  border: none;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.gps-fab:hover {
+  transform: scale(1.05);
+}
+
+/* BOTTOM SHEET (Lista Subindo da Base) */
+.bottom-sheet {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #f8fafc;
+  z-index: 500;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.bottom-sheet.open {
+  height: 40%;
+  transform: translateY(0);
+}
+
+.bottom-sheet.closed {
+  height: 40%;
+  transform: translateY(calc(100% - 30px)); /* Deixa só a bordinha aparecendo */
+}
+
+.sheet-drag-handle {
+  width: 100%;
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+  background: white;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+}
+
+.handle-bar {
+  width: 40px;
+  height: 5px;
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.sheet-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 15px;
+  background: white;
+}
+
+.sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* CARDS DO BOTTOM SHEET */
+.sheet-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sheet-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.sheet-card.selected {
+  border-color: #10b981; /* Verde esmeralda */
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.15);
+  background: #f0fdf4;
+}
+
+.card-info h4 {
+  margin: 0 0 5px 0;
+  color: #0f172a;
+  font-size: 1rem;
+}
+
+.card-info p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+/* AÇÕES DO CARD (Aparece ao clicar) */
+.card-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #e2e8f0;
+  animation: slideDown 0.3s ease;
+}
+
+.btn-quero-ajudar {
+  flex: 1;
+  background: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 0;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-fechar {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Customização de botões internos do Leaflet */
+.popup-btn {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 5px;
+  width: 100%;
+}
+
+@media (max-width: 800px) {
+  .nav-links { display: none; }
 }

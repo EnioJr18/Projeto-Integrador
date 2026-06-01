@@ -42,10 +42,30 @@ class EventoSocialDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
 
-class InscreverEventoView(generics.CreateAPIView):
-    queryset = Inscricao.objects.all()
-    serializer_class = InscricaoSerializer
+class InscreverEventoView(APIView):
     permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        # Tenta pegar o ID do evento que o React enviou no pacote (suporta 'evento' ou 'evento_id')
+        evento_id = request.data.get('evento') or request.data.get('evento_id')
+        
+        if not evento_id:
+            return Response({"error": "ID do evento não fornecido no corpo da requisição."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Pega o evento no banco de dados
+        evento = get_object_or_404(EventoSocial, id=evento_id)
+
+        if evento.organizador == request.user:
+            return Response({"error": "Você não pode se inscrever no seu próprio evento."},status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verifica se o banco de dados JÁ TEM essa inscrição salva
+        if Inscricao.objects.filter(participante=request.user, evento=evento).exists():
+            return Response({"error": "Você já está inscrito neste evento."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Se chegou até aqui, cria a inscrição tranquilamente com o usuário logado
+        Inscricao.objects.create(participante=request.user, evento=evento)
+        
+        return Response({"mensagem": "Inscrição confirmada com sucesso!"}, status=status.HTTP_201_CREATED)
 
 class MinhasInscricoesView(generics.ListAPIView):
     serializer_class = InscricaoSerializer
@@ -58,14 +78,14 @@ class MinhasInscricoesView(generics.ListAPIView):
 class CancelarInscricaoView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def patch(self, request, pk):
-        
-        inscricao = get_object_or_404(Inscricao, id=pk, participante=self.request.user)
+    def delete(self, request, evento_id):
+        # Busca a inscrição específica deste usuário para este evento
+        inscricao = get_object_or_404(Inscricao, evento_id=evento_id, participante=request.user)
 
-        inscricao.status = 'cancelada'
-        inscricao.save()
+        # Deleta a inscrição do banco de dados (libera a vaga e permite nova inscrição futura)
+        inscricao.delete()
 
-        return Response({"mensagem": "Inscrição cancelada com sucesso!"}, status=status.HTTP_200_OK)
+        return Response({"mensagem": "Inscrição cancelada com sucesso!"},status=status.HTTP_200_OK)
     
 
 class InscricoesRecebidasView(generics.ListAPIView):
@@ -74,3 +94,4 @@ class InscricoesRecebidasView(generics.ListAPIView):
 
     def get_queryset(self):
         return Inscricao.objects.filter(evento__organizador=self.request.user)
+    

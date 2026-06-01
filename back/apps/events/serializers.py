@@ -56,6 +56,7 @@ class EventoSocialSerializer(serializers.ModelSerializer):
     latitude = serializers.FloatField(write_only=True, required=False)
     longitude = serializers.FloatField(write_only=True, required=False)
     organizador = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    inscritos = serializers.SerializerMethodField()
 
     class Meta:
         model = EventoSocial
@@ -66,6 +67,7 @@ class EventoSocialSerializer(serializers.ModelSerializer):
             'endereco',
             'categoria',
             'vagas',
+            'inscritos',
             'data_hora',
             'localizacao',
             'criado_em',
@@ -111,6 +113,9 @@ class EventoSocialSerializer(serializers.ModelSerializer):
             validated_data['localizacao'] = Point(float(longitude), float(latitude), srid=4326)
 
         return super().update(instance, validated_data)
+    
+    def get_inscritos(self, obj):
+        return obj.inscricoes_do_evento.filter(status='confirmada').count()
 
 class InscricaoSerializer(serializers.ModelSerializer):
     participante = serializers.HiddenField(

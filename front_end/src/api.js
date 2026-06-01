@@ -169,3 +169,25 @@ export async function getProfile() {
 export async function getInscricoesRecebidas() {
   return request('/eventos/inscricoes-recebidas/');
 }
+
+// Adicione isso junto com as outras funções do api.js
+export const cancelarInscricao = async (eventoId) => {
+  const token = localStorage.getItem('accessToken') || localStorage.getItem('token')
+
+  const response = await fetch(`${API_BASE}/eventos/${eventoId}/cancelar-inscricao/`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+
+  if (!response.ok) {
+    throw new Error('Falha ao cancelar inscrição')
+  }
+
+  return true
+}
+
+export async function getMinhasInscricoes() {
+  return request('/eventos/minhas-inscricoes/');
+}

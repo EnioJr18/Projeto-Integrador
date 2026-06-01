@@ -32,6 +32,10 @@ class EventoSocial(models.Model):
 
     organizador = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='eventos_organizados')
 
+    link_comprovacao = models.URLField(max_length=500, blank=True, null=True)
+
+    cancelado = models.BooleanField(default=False)
+
     class Meta:
         verbose_name = 'Evento Social'
         verbose_name_plural = 'Eventos Sociais'
