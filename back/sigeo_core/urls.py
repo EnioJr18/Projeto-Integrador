@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from seu_app.views import criar_admin_emergencia
+from eventos.views import criar_admin_emergencia
 
 urlpatterns = [
     path('admin/', admin.site.urls),
