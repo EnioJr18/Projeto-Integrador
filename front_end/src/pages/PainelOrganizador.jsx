@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getInscricoesRecebidas } from './api';
+import { getInscricoesRecebidas } from '../api';
 
 export default function PainelOrganizador({ eventos }) {
   const [inscricoes, setInscricoes] = useState(null);
