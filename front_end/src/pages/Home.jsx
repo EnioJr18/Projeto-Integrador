@@ -229,8 +229,10 @@ export default function Home({
       {eventoSelecionado && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            
+            {/* Cabeçalho do Modal */}
             <div className="flex justify-between items-center p-6 border-b border-slate-100 bg-slate-50">
-              <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+              <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-sm">
                 {eventoSelecionado.categoria}
               </span>
               <button 
@@ -241,75 +243,89 @@ export default function Home({
               </button>
             </div>
 
+            {/* Corpo do Modal */}
             <div className="p-6 overflow-y-auto">
               <h3 className="text-2xl font-extrabold text-slate-900 mb-4">{eventoSelecionado.titulo}</h3>
               <p className="text-slate-600 mb-6 leading-relaxed">
                 {eventoSelecionado.descricao}
               </p>
               
-              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl" aria-hidden="true">📍</span>
-                    <div>
-                      <p className="text-[0.65rem] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Localização</p>
-                      <p className="font-semibold text-slate-700 text-sm">{eventoSelecionado.cidade}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl" aria-hidden="true">📅</span>
-                    <div>
-                      <p className="text-[0.65rem] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Data e Hora</p>
-                      <p className="font-semibold text-slate-700 text-sm">15 de Julho • 08:00 - 12:00</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl" aria-hidden="true">⭐</span>
-                    <div>
-                      <p className="text-[0.65rem] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Avaliação Média</p>
-                      <div className="flex items-center gap-1">
-                        <span className="font-bold text-slate-700 text-sm">4.8</span>
-                        <div className="flex text-amber-400 text-sm tracking-tighter">
-                          ★★★★<span className="text-slate-300">★</span>
-                        </div>
-                        <span className="text-xs text-slate-400 ml-1">(12)</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl" aria-hidden="true">🔗</span>
-                    <div>
-                      <p className="text-[0.65rem] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Comprovação</p>
-                      <a href={eventoSelecionado.link_comprovacao || "#"} target="_blank" rel="noreferrer" className="font-semibold text-sm text-blue-600 hover:text-blue-800 hover:underline transition-colors line-clamp-1">
-                        {eventoSelecionado.link_comprovacao ? "Acessar formulário" : "Nenhum link exigido"}
-                      </a>
-                    </div>
+              {/* Informações Dinâmicas puxando do Banco */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                
+                <div className="flex items-start gap-4">
+                  <span className="text-2xl drop-shadow-sm" aria-hidden="true">📍</span>
+                  <div>
+                    <span className="block text-xs font-bold text-slate-400 mb-1 tracking-wider uppercase">Localização</span>
+                    <span className="font-semibold text-slate-700">{eventoSelecionado.endereco || eventoSelecionado.cidade || "Local a definir"}</span>
                   </div>
                 </div>
+
+                <div className="flex items-start gap-4">
+                  <span className="text-2xl drop-shadow-sm" aria-hidden="true">📅</span>
+                  <div>
+                    <span className="block text-xs font-bold text-slate-400 mb-1 tracking-wider uppercase">Data e Hora</span>
+                    <span className="font-semibold text-slate-700">
+                      {eventoSelecionado.data_hora ? new Date(eventoSelecionado.data_hora).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' }) : "Data não informada"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <span className="text-2xl drop-shadow-sm" aria-hidden="true">👥</span>
+                  <div>
+                    <span className="block text-xs font-bold text-slate-400 mb-1 tracking-wider uppercase">Vagas</span>
+                    <span className="font-semibold text-slate-700">{eventoSelecionado.vagas || "Ilimitado"}</span>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <span className="text-2xl drop-shadow-sm" aria-hidden="true">🔗</span>
+                  <div>
+                    <span className="block text-xs font-bold text-slate-400 mb-1 tracking-wider uppercase">Comprovação</span>
+                    {eventoSelecionado.link_comprovacao ? (
+                      <a href={eventoSelecionado.link_comprovacao} target="_blank" rel="noopener noreferrer" className="font-bold text-blue-600 hover:text-blue-700 hover:underline">
+                        Acessar link
+                      </a>
+                    ) : (
+                      <span className="font-semibold text-slate-500">Nenhum link exigido</span>
+                    )}
+                  </div>
+                </div>
+
               </div>
             </div>
 
-            <div className="p-6 border-t border-slate-100 bg-white flex justify-end gap-3">
+            {/* Rodapé do Modal com Botões */}
+            <div className="p-6 border-t border-slate-100 bg-white flex flex-col sm:flex-row justify-end gap-3">
               <button 
                 onClick={() => setEventoSelecionado(null)}
-                className="px-6 py-3 rounded-full font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                className="px-6 py-3 rounded-full font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors w-full sm:w-auto text-center"
               >
                 Voltar
               </button>
+              
+              {/* O Botão Mágico que muda de estado */}
               <button 
                 onClick={() => {
-                  handleParticipar(eventoSelecionado.id);
-                  setEventoSelecionado(null);
+                  if (handleParticipar) handleParticipar(eventoSelecionado.id);
+                  // Removemos o setEventoSelecionado(null) daqui para o modal não fechar na cara do usuário!
                 }}
-                className="px-6 py-3 rounded-full font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/20 transition-all hover:-translate-y-0.5"
+                className={`px-6 py-3 rounded-full font-bold text-white shadow-md transition-all hover:-translate-y-0.5 w-full sm:w-auto text-center ${
+                  inscricoesConfirmadas?.some(insc => insc.evento === eventoSelecionado.id)
+                    ? "bg-red-500 hover:bg-red-600" // Se já tá inscrito, fica vermelho para cancelar
+                    : "bg-emerald-600 hover:bg-emerald-500" // Se não tá, fica verde para inscrever
+                }`}
               >
-                Confirmar Inscrição
+                {inscricoesConfirmadas?.some(insc => insc.evento === eventoSelecionado.id)
+                  ? "Cancelar Inscrição"
+                  : "Confirmar Inscrição"}
               </button>
             </div>
           </div>
         </div>
-        
       )}
+      
       {/* ========================================= */}
       {/* SOBRE / CTA SECTION                       */}
       {/* ========================================= */}

@@ -1,120 +1,158 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const DashboardImpacto = () => {
+export default function DashboardImpacto() {
+  const navigate = useNavigate();
+
   return (
-    <div style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto', fontFamily: 'system-ui, sans-serif' }}>
-      
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ color: '#0f172a', fontSize: '2.5rem', marginBottom: '10px' }}>Módulo de Impacto Social</h1>
-        <p style={{ color: '#64748b', fontSize: '1.1rem' }}>Visão geral do engajamento e transformação nas comunidades (Visão Estratégica)</p>
-      </div>
-
-      {/* Cartões de Métricas Principais */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '40px' }}>
+    <div className="min-h-screen bg-slate-50 py-16">
+      <div className="container mx-auto px-4 max-w-6xl">
         
-        <div style={{ background: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', borderLeft: '5px solid #3b82f6' }}>
-          <h3 style={{ color: '#64748b', margin: '0 0 10px 0', fontSize: '1rem' }}>Voluntários Ativos</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#0f172a', margin: '0' }}>1.248</p>
-          <small style={{ color: '#10b981', fontWeight: 'bold' }}>↑ 12% este mês</small>
+        {/* Cabeçalho do Dashboard */}
+        <div className="text-center mb-12">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">
+            Módulo de Impacto Social
+          </h1>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+            Visão geral do engajamento e transformação nas comunidades (Visão Estratégica)
+          </p>
         </div>
 
-        <div style={{ background: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', borderLeft: '5px solid #10b981' }}>
-          <h3 style={{ color: '#64748b', margin: '0 0 10px 0', fontSize: '1rem' }}>Ações Concluídas</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#0f172a', margin: '0' }}>342</p>
-          <small style={{ color: '#10b981', fontWeight: 'bold' }}>↑ 8% este mês</small>
-        </div>
-
-        <div style={{ background: 'white', padding: '25px', borderRadius: '15px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', borderLeft: '5px solid #8b5cf6' }}>
-          <h3 style={{ color: '#64748b', margin: '0 0 10px 0', fontSize: '1rem' }}>Vidas Impactadas (Est.)</h3>
-          <p style={{ fontSize: '2.5rem', fontWeight: 'bold', color: '#0f172a', margin: '0' }}>+15k</p>
-          <small style={{ color: '#64748b' }}>Baseado em relatórios</small>
-        </div>
-
-      </div>
-
-      {/* Ranking e Gráfico */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '30px' }}>
-        
-        {/* Ranking de Cidades (A ideia do Jean!) */}
-        <div style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
-          <h2 style={{ color: '#0f172a', marginBottom: '20px', fontSize: '1.5rem' }}>🏆 Ranking Cidades Solidárias</h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-            
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', background: '#f8fafc', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ fontSize: '1.5rem' }}>🥇</span>
-                <span style={{ fontWeight: 'bold', color: '#334155' }}>Maceió</span>
-              </div>
-              <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '4px 10px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 'bold' }}>84 eventos</span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', background: '#f8fafc', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ fontSize: '1.5rem' }}>🥈</span>
-                <span style={{ fontWeight: 'bold', color: '#334155' }}>Arapiraca</span>
-              </div>
-              <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '4px 10px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 'bold' }}>56 eventos</span>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px', background: '#f8fafc', borderRadius: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                <span style={{ fontSize: '1.5rem' }}>🥉</span>
-                <span style={{ fontWeight: 'bold', color: '#334155' }}>São Miguel dos Campos</span>
-              </div>
-              <span style={{ background: '#dbeafe', color: '#1d4ed8', padding: '4px 10px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: 'bold' }}>42 eventos</span>
-            </div>
-
-          </div>
-        </div>
-
-        {/* Categorias Mais Atendidas (Gráfico visual) */}
-        <div style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
-          <h2 style={{ color: '#0f172a', marginBottom: '20px', fontSize: '1.5rem' }}>📊 Categorias em Destaque</h2>
+        {/* Cartões de Métricas Principais */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span style={{ fontWeight: '600', color: '#475569' }}>Educação</span>
-                <span style={{ color: '#64748b' }}>45%</span>
+          {/* Card 1: Voluntários */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-blue-500"></div>
+            <h3 className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-2">Voluntários Ativos</h3>
+            <p className="text-4xl font-extrabold text-slate-900 mb-2">1.248</p>
+            <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 bg-emerald-50 w-fit px-2.5 py-1 rounded-full">
+              <span>↑</span> 12% este mês
+            </div>
+          </div>
+
+          {/* Card 2: Ações */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+            <h3 className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-2">Ações Concluídas</h3>
+            <p className="text-4xl font-extrabold text-slate-900 mb-2">342</p>
+            <div className="flex items-center gap-1.5 text-sm font-semibold text-emerald-600 bg-emerald-50 w-fit px-2.5 py-1 rounded-full">
+              <span>↑</span> 8% este mês
+            </div>
+          </div>
+
+          {/* Card 3: Vidas */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden group hover:shadow-md transition-shadow">
+            <div className="absolute top-0 left-0 w-1.5 h-full bg-violet-500"></div>
+            <h3 className="text-slate-500 font-bold uppercase tracking-wider text-xs mb-2">Vidas Impactadas (Est.)</h3>
+            <p className="text-4xl font-extrabold text-slate-900 mb-2">+15k</p>
+            <div className="flex items-center gap-1.5 text-sm font-medium text-slate-400">
+              Baseado em relatórios
+            </div>
+          </div>
+
+        </div>
+
+        {/* Seção de Rankings e Gráficos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          
+          {/* Ranking de Cidades */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+              <span className="text-3xl" aria-hidden="true">🏆</span> 
+              Ranking Cidades Solidárias
+            </h2>
+            
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl drop-shadow-sm">🥇</span>
+                  <span className="font-extrabold text-slate-800 text-lg">Maceió</span>
+                </div>
+                <span className="bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm">
+                  84 eventos
+                </span>
               </div>
-              <div style={{ width: '100%', background: '#e2e8f0', borderRadius: '10px', height: '10px' }}>
-                <div style={{ width: '45%', background: '#3b82f6', height: '100%', borderRadius: '10px' }}></div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl drop-shadow-sm">🥈</span>
+                  <span className="font-extrabold text-slate-800 text-lg">Arapiraca</span>
+                </div>
+                <span className="bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm">
+                  56 eventos
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 hover:border-slate-200 transition-colors">
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl drop-shadow-sm">🥉</span>
+                  <span className="font-extrabold text-slate-800 text-lg">São Miguel dos Campos</span>
+                </div>
+                <span className="bg-blue-100 text-blue-800 px-4 py-1.5 rounded-full text-sm font-bold shadow-sm">
+                  42 eventos
+                </span>
               </div>
             </div>
+          </div>
 
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span style={{ fontWeight: '600', color: '#475569' }}>Assistência Social</span>
-                <span style={{ color: '#64748b' }}>30%</span>
+          {/* Categorias Mais Atendidas */}
+          <div className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+            <h2 className="text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3">
+              <span className="text-3xl" aria-hidden="true">📊</span> 
+              Categorias em Destaque
+            </h2>
+            
+            <div className="flex flex-col gap-8">
+              {/* Educação */}
+              <div>
+                <div className="flex justify-between items-end mb-2">
+                  <span className="font-bold text-slate-700">Educação</span>
+                  <span className="font-bold text-slate-400 text-sm">45%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
+                  <div className="bg-blue-500 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: '45%' }}></div>
+                </div>
               </div>
-              <div style={{ width: '100%', background: '#e2e8f0', borderRadius: '10px', height: '10px' }}>
-                <div style={{ width: '30%', background: '#f97316', height: '100%', borderRadius: '10px' }}></div>
-              </div>
-            </div>
 
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-                <span style={{ fontWeight: '600', color: '#475569' }}>Saúde</span>
-                <span style={{ color: '#64748b' }}>15%</span>
+              {/* Assistência Social */}
+              <div>
+                <div className="flex justify-between items-end mb-2">
+                  <span className="font-bold text-slate-700">Assistência Social</span>
+                  <span className="font-bold text-slate-400 text-sm">30%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
+                  <div className="bg-orange-500 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: '30%' }}></div>
+                </div>
               </div>
-              <div style={{ width: '100%', background: '#e2e8f0', borderRadius: '10px', height: '10px' }}>
-                <div style={{ width: '15%', background: '#ef4444', height: '100%', borderRadius: '10px' }}></div>
+
+              {/* Saúde */}
+              <div>
+                <div className="flex justify-between items-end mb-2">
+                  <span className="font-bold text-slate-700">Saúde</span>
+                  <span className="font-bold text-slate-400 text-sm">15%</span>
+                </div>
+                <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden shadow-inner">
+                  <div className="bg-red-500 h-full rounded-full transition-all duration-1000 ease-out" style={{ width: '15%' }}></div>
+                </div>
               </div>
             </div>
           </div>
 
         </div>
-      </div>
-      
-      <div style={{ textAlign: 'center', marginTop: '40px' }}>
-        <button 
-          onClick={() => window.location.assign('/')}
-          style={{ background: '#333', color: 'white', padding: '10px 25px', borderRadius: '8px', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}>
-          Voltar para o Início
-        </button>
+        
+        {/* Ação de Voltar */}
+        <div className="text-center">
+          <button 
+            onClick={() => navigate('/')}
+            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all"
+          >
+            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-current" aria-hidden="true"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            Voltar para o Início
+          </button>
+        </div>
+
       </div>
     </div>
   );
-};
-
-export default DashboardImpacto;
+}

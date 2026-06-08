@@ -191,3 +191,42 @@ export const cancelarInscricao = async (eventoId) => {
 export async function getMinhasInscricoes() {
   return request('/eventos/minhas-inscricoes/');
 }
+
+// Função para o Organizador deletar seu próprio evento
+export const deleteEvento = async (eventoId) => {
+  const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+
+  const response = await fetch(`${API_BASE}/eventos/${eventoId}/`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok && response.status !== 204) {
+    throw new Error('Falha ao excluir o projeto. Verifique suas permissões.');
+  }
+
+  return true;
+};
+
+// Função para o Organizador editar um projeto existente
+export const updateEvento = async (eventoId, payload) => {
+  const token = localStorage.getItem('accessToken') || localStorage.getItem('token');
+  
+  const response = await fetch(`${API_BASE}/eventos/${eventoId}/`, {
+    method: 'PATCH', // Usamos PATCH para atualizar apenas os campos enviados
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error('Falha ao atualizar o projeto. Verifique os dados.');
+  }
+
+  return response.json();
+};
+

@@ -20,6 +20,7 @@ import Login from "./pages/Login.jsx";
 import Cadastro from "./pages/Cadastro.jsx";
 import DashboardImpacto from "./pages/DashboardImpacto.jsx";
 import PainelOrganizador from "./pages/PainelOrganizador.jsx";
+import ListaInscritos from './pages/ListaInscritos';
 import "./App.css";
 
 const CATEGORY_LABELS = {
@@ -36,7 +37,7 @@ const CATEGORY_LABELS = {
 function App() {
   const navigate = useNavigate(); // Hook do react-router para navegação programática
   const [eventos, setEventos] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingEventos, setIsLoadingEventos] = useState(true);
   const [apiError, setApiError] = useState("");
   const [createError, setCreateError] = useState("");
   const [createSuccess, setCreateSuccess] = useState("");
@@ -62,47 +63,68 @@ function App() {
     link_comprovacao: "",
   });
 
-  const [mostrarApenasMinhas, setMostrarApenasMinhas] = useState(false);
+const [mostrarApenasMinhas, setMostrarApenasMinhas] = useState(false);
   const isAuthenticated = !!localStorage.getItem("accessToken") || !!localStorage.getItem("token");
-  const [userName, setUserName] = useState("");
-  const [userRole, setUserRole] = useState("");
+  
+  // Agora o React puxa o nome e a função da memória assim que a página carrega!
+  const [userName, setUserName] = useState(localStorage.getItem("userName") || "");
+  const [userRole, setUserRole] = useState(localStorage.getItem("userRole") || "");
   const [inscricoesConfirmadas, setInscricoesConfirmadas] = useState([]);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      getProfile()
-        .then((data) => {
-          setUserName(data.username || data.first_name || "Usuário");
-          setUserRole(data.role === "organizador" ? "Organizador" : "Participante");
-        })
-        .catch(() => console.log("Erro ao carregar os dados do usuário"));
+  // ... (seus estados iniciais aqui)
 
+useEffect(() => {
+    const token = localStorage.getItem("accessToken") || localStorage.getItem("token");
+    if (token) {
+      // Como o isAuthenticated já se vira sozinho, só precisamos puxar os dados e inscrições!
+      setUserName(localStorage.getItem("userName") || "Usuário");
+      setUserRole(localStorage.getItem("userRole") || "Participante");
+
+      // Puxa as inscrições do usuário
       getMinhasInscricoes()
-        .then((data) => setInscricoesConfirmadas(data.map((i) => i.evento)))
-        .catch((error) => console.error("Erro ao carregar inscrições:", error));
+        .then(data => {
+          setInscricoesConfirmadas(Array.isArray(data) ? data : []);
+        })
+        .catch(error => {
+          console.error("Erro ao puxar inscrições do usuário:", error);
+          setInscricoesConfirmadas([]);
+        });
     }
-  }, [isAuthenticated]);
+  }, []);
+
 
   useEffect(() => {
-    let isMounted = true;
-    async function loadEventos() {
-      setIsLoading(true);
-      setApiError("");
+    const fetchEventos = async () => {
       try {
-        const data = await listEventos({ categoria: selectedCategory });
-        if (isMounted) setEventos(Array.isArray(data) ? data : []);
-      } catch {
-        if (isMounted) {
-          setApiError("Não foi possível carregar os eventos agora.");
-          setEventos([]);
-        }
+        setIsLoadingEventos(true);
+        // Usa a função do seu api.js para buscar no backend
+        const data = await listEventos(); 
+        setEventos(Array.isArray(data) ? data : []);
+      } catch (error) {
+        console.error("Erro ao buscar projetos:", error);
+        setEventos([]);
       } finally {
-        if (isMounted) setIsLoading(false);
+        setIsLoadingEventos(false);
       }
+    };
+
+    fetchEventos();
+  }, []);
+
+  // -----------------------------------------------------
+  // TEMPORIZADOR DO ALERTA (TOAST)
+  // -----------------------------------------------------
+  useEffect(() => {
+    if (toastMessage) {
+      // Se tiver uma mensagem, esconde ela depois de 3.5 segundos
+      const timer = setTimeout(() => {
+        setToastMessage("");
+      }, 3500);
+      
+      // Limpeza de segurança do React
+      return () => clearTimeout(timer);
     }
-    loadEventos();
-    return () => { isMounted = false; };
-  }, [selectedCategory]);
+  }, [toastMessage]);
 
   const eventosParaMostrar = mostrarApenasMinhas
     ? eventos.filter((e) => inscricoesConfirmadas.includes(e.id))
@@ -116,45 +138,89 @@ function App() {
       )
     : eventosParaMostrar;
 
-  const handleSearch = (event) => {
-    event.preventDefault();
-    const value = searchValue.trim();
-    setSubmittedSearch(value);
-    setToastMessage(value ? `Buscando por: ${value}` : "Selecione um projeto no mapa");
-    navigate("/projetos"); // Se a pessoa pesquisar na home, joga ela pra tela de projetos
+  // -----------------------------------------------------
+  // FILTRO POR CATEGORIA (Direto do Banco de Dados)
+  // -----------------------------------------------------
+  const handleCategoryFilter = async (categoria) => {
+    try {
+      setIsLoadingEventos(true);
+      
+      const paramCategoria = (categoria === 'todas' || categoria === 'Todos') ? '' : categoria;
+      const data = await listEventos({ categoria: paramCategoria });
+      
+      setEventos(Array.isArray(data) ? data : []);
+
+      // NOVIDADE: Rola suavemente até a seção de eventos após filtrar
+      setTimeout(() => {
+        document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+
+    } catch (error) {
+      console.error("Erro ao filtrar projetos por categoria:", error);
+      setEventos([]);
+    } finally {
+      setIsLoadingEventos(false);
+    }
   };
 
-  const handleCategoryFilter = (categoria) => {
-    setSelectedCategory((current) => (current === categoria ? "" : categoria));
+  // -----------------------------------------------------
+  // BUSCA POR TEXTO (Barra de Pesquisa)
+  // -----------------------------------------------------
+  const handleSearch = async (event) => {
+    if (event) event.preventDefault();
+    
+    try {
+      setIsLoadingEventos(true);
+      
+      const data = await listEventos({ search: searchValue });
+      setEventos(Array.isArray(data) ? data : []);
+
+      // NOVIDADE: Rola suavemente até a seção de eventos após pesquisar
+      setTimeout(() => {
+        document.getElementById('eventos')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 200);
+
+    } catch (error) {
+      console.error("Erro ao buscar projetos:", error);
+      setEventos([]);
+    } finally {
+      setIsLoadingEventos(false);
+    }
   };
 
+// -----------------------------------------------------
+  // INSCRIÇÃO E CANCELAMENTO EM PROJETOS
+  // -----------------------------------------------------
   const handleParticipar = async (eventoId) => {
     if (!isAuthenticated) {
-      alert("Você precisa estar logado para participar.");
-      navigate("/login");
+      if (typeof setToastMessage === 'function') setToastMessage("Você precisa entrar na sua conta!");
+      setTimeout(() => window.location.assign("/login"), 1500);
       return;
     }
 
-    const isConfirmed = inscricoesConfirmadas.includes(eventoId);
+    try {
+      // Verifica se o usuário já está inscrito no evento
+      const jaInscrito = inscricoesConfirmadas.some(inscricao => inscricao.evento === eventoId);
 
-    if (isConfirmed) {
-      const desejaCancelar = window.confirm("Você tem certeza que deseja cancelar sua inscrição neste projeto?");
-      if (desejaCancelar) {
-        try {
-          await cancelarInscricao(eventoId);
-          setInscricoesConfirmadas((prev) => prev.filter((id) => id !== eventoId));
-          alert("Inscrição cancelada com sucesso!");
-        } catch (error) {
-          alert("Erro no servidor: " + error.message);
-        }
-      }
-    } else {
-      try {
+      if (jaInscrito) {
+        // Se já está inscrito, faz o cancelamento
+        await cancelarInscricao(eventoId);
+        if (typeof setToastMessage === 'function') setToastMessage("Inscrição cancelada com sucesso.");
+      } else {
+        // Se não está, faz a inscrição
         await inscreverEvento(eventoId);
-        setInscricoesConfirmadas((prev) => prev.includes(eventoId) ? prev : [...prev, eventoId]);
-        alert("Inscrição confirmada com sucesso! 🎉");
-      } catch (error) {
-        alert("Não foi possível realizar a inscrição. O servidor recusou (Provavelmente você já está inscrito).");
+        if (typeof setToastMessage === 'function') setToastMessage("Inscrição confirmada com sucesso! 🎉");
+      }
+
+      // Atualiza a lista local na mesma hora
+      const atualizadas = await getMinhasInscricoes();
+      setInscricoesConfirmadas(Array.isArray(atualizadas) ? atualizadas : []);
+
+    } catch (error) {
+      if (typeof setToastMessage === 'function') {
+        setToastMessage(error.message || "Erro ao processar sua solicitação.");
+      } else {
+        alert(error.message || "Erro ao processar sua solicitação.");
       }
     }
   };
@@ -165,24 +231,30 @@ function App() {
     setCreateSuccess("");
 
     try {
-      const createdEvento = await createEvento({
-        titulo: eventForm.titulo.trim(),
-        descricao: eventForm.descricao.trim(),
-        categoria: eventForm.categoria,
-        vagas: Number(eventForm.vagas),
-        data_hora: eventForm.data_hora,
-        endereco: address.trim(),
-        link_comprovacao: eventForm.link_comprovacao.trim(),
-      });
+      // 1. Junta os dados do formulário com o endereço do Autocomplete
+      const payload = {
+        ...eventForm,
+        endereco: address // Certifique-se de que o backend espera o campo "endereco"
+      };
 
-      setEventos((current) => [createdEvento, ...current]);
-      setCreateSuccess("Evento cadastrado com sucesso.");
-      setToastMessage("Novo evento criado.");
-      setEventForm({ titulo: "", descricao: "", categoria: "outro", vagas: "20", data_hora: "", link_comprovacao: "" });
-      setAddress("");
-      navigate("/projetos");
+      // 2. Dispara para a API
+      await createEvento(payload);
+      
+      setCreateSuccess("Projeto publicado com sucesso!");
+      
+      // 3. Limpa o formulário
+      setEventForm({ titulo: '', categoria: 'saude', vagas: '', data_hora: '', link_comprovacao: '', descricao: '' });
+      setAddress('');
+      
+      // 4. Recarrega a lista de eventos para o mapa e a tela de projetos atualizarem na hora
+      const updatedEventos = await listEventos();
+      setEventos(Array.isArray(updatedEventos) ? updatedEventos : []);
+
+      // 5. Manda o usuário de volta para a tela de projetos
+      setTimeout(() => navigate("/projetos"), 1500);
+      
     } catch (error) {
-      setCreateError(error.message || "Não foi possível cadastrar o evento. Verifique os dados.");
+      setCreateError(error.message || "Erro ao publicar o projeto. Verifique os dados.");
     }
   };
 
@@ -200,17 +272,44 @@ function App() {
     window.location.assign("/"); // Limpa o estado real do navegador no logout
   };
 
-  const handleLogin = async ({ identifier, password }) => {
+const handleLogin = async ({ identifier, password }) => {
     setLoginError("");
     setLoginSuccess("");
+    
     try {
+      // 1. Faz o login e pega os Tokens[cite: 5]
       const data = await loginUser({ username: identifier.trim(), password });
+      
       if (data?.access) localStorage.setItem("accessToken", data.access);
       if (data?.refresh) localStorage.setItem("refreshToken", data.refresh);
       if (data?.token) localStorage.setItem("token", data.token);
 
+      // 2. COMBO OBRIGATÓRIO: Buscar os dados do usuário para saber o "role"[cite: 5]
+      try {
+        const profileInfo = await getProfile();
+        
+        // Salva o nome para a Navbar
+        localStorage.setItem("userName", profileInfo.username || profileInfo.first_name || identifier);
+        
+        // Formata o papel do usuário (role). 
+        // O backend normalmente retorna "organizador" ou "comum"[cite: 5].
+        const roleRaw = profileInfo.role || "comum";
+        const roleFormatado = roleRaw === "organizador" ? "Organizador" : "Participante";
+        localStorage.setItem("userRole", roleFormatado);
+        
+      } catch (profileError) {
+         console.warn("Aviso: Token recebido, mas não foi possível buscar o perfil completo.", profileError);
+         // Define um padrão seguro caso a rota /me falhe
+         localStorage.setItem("userName", identifier);
+         localStorage.setItem("userRole", "Participante");
+      }
+
       setLoginSuccess("Entrada realizada com sucesso. Redirecionando...");
+      
+      // Forçamos o reload da página para que o App.jsx leia o localStorage novamente
+      // e monte as rotas corretamente (liberando o /painel se for Organizador)
       setTimeout(() => window.location.assign("/"), 800);
+      
     } catch (error) {
       setLoginError(error.message || "Não foi possível entrar. Confira seus dados.");
     }
@@ -226,10 +325,21 @@ function App() {
     }
 
     try {
+      // Cria a conta enviando os dados limpos para a API[cite: 5]
       await registerUser({ username: username.trim(), email: email.trim(), password, role });
+      
       setRegisterSuccess("Cadastro criado com sucesso. Agora você já pode entrar.");
-      setToastMessage("Cadastro criado com sucesso.");
-      setTimeout(() => navigate("/login"), 1500);
+      
+      // Caso você tenha uma função global de Toast, a mantemos aqui
+      if (typeof setToastMessage === 'function') {
+        setToastMessage("Cadastro criado com sucesso.");
+      }
+      
+      // Troquei o window.location.assign pelo navigate (se disponível no App.jsx) 
+      // ou mantemos o window.location dependendo de como está o escopo. 
+      // Usando window.location para garantir que não dê erro de hook fora de escopo.
+      setTimeout(() => window.location.assign("/login"), 1500);
+      
     } catch (error) {
       setRegisterError(error.message || "Não foi possível criar sua conta.");
     }
@@ -253,12 +363,14 @@ function App() {
             <button onClick={() => {navigate("/");setTimeout(() => document.getElementById('sobre')?.scrollIntoView({behavior: 'smooth'}), 100);}} className="hover:text-white hover:underline underline-offset-4 transition-all">Sobre</button>
           </div>
 
+          {/* --- AÇÕES (Perfil, Login, Botão de Cadastro) --- */}
           <div className="flex items-center gap-3 md:gap-4">
             {isAuthenticated ? (
               <div className="flex items-center gap-3 md:gap-4 whitespace-nowrap">
                 <span className="hidden md:flex items-center gap-1 bg-amber-400 text-amber-900 px-3 py-1 rounded-full text-xs font-bold shadow-sm">
                   🏅 Cidadão Solidário
                 </span>
+                
                 <div className="flex flex-col items-end leading-tight">
                   <span className="font-semibold text-slate-100 text-sm">Olá, {userName}!</span>
                   {userRole && (
@@ -267,6 +379,14 @@ function App() {
                     </span>
                   )}
                 </div>
+
+                {/* Botão Meu Painel (Aparece só para Organizador) */}
+                {userRole === "Organizador" && (
+                  <button onClick={() => navigate('/painel')} className="text-emerald-400 hover:text-emerald-300 text-sm font-medium ml-2 mr-2 transition-colors">
+                    Meu Painel
+                  </button>
+                )}
+
                 <button onClick={handleLogout} className="text-red-400 hover:text-red-300 text-sm font-medium ml-1 transition-colors">Sair</button>
               </div>
             ) : (
@@ -275,6 +395,7 @@ function App() {
                 <button onClick={() => navigate("/login")} className="text-sm font-medium text-white hover:text-blue-400 transition-colors">Entrar</button>
               </div>
             )}
+            
             <button onClick={() => navigate("/cadastrar-evento")} className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-md transition-all flex items-center justify-center whitespace-nowrap">
               <span className="hidden sm:inline">Cadastrar projeto</span>
               <span className="sm:hidden">+ Criar</span>
@@ -290,7 +411,7 @@ function App() {
           <Route path="/" element={
             <Home 
               eventos={eventos} 
-              isLoading={isLoading}
+              isLoading={isLoadingEventos}
               apiError={apiError}
               searchValue={searchValue}
               setSearchValue={setSearchValue}
@@ -315,6 +436,15 @@ function App() {
 
           {/* Outras Páginas isoladas */}
           <Route path="/dashboard" element={<DashboardImpacto />} />
+
+          {/* NOSSA NOVA ROTA DO PAINEL */}
+          <Route path="/painel" element={<PainelOrganizador eventos={eventos} />} />
+
+          {/* Rotas do Organizador */}
+          <Route path="/painel/lista/:id" element={<ListaInscritos />} />
+          
+          {/* Usamos o mesmo componente de criar, mas agora passando um aviso de que é edição (podemos ajustar a lógica dentro dele amanhã) */}
+          <Route path="/editar-evento/:id" element={<CriarEvento />} />
           
           <Route path="/login" element={
             <Login onSubmit={handleLogin} loginError={loginError} loginSuccess={loginSuccess} />
@@ -336,6 +466,24 @@ function App() {
             />
           } />
         </Routes>
+      {/* ========================================= */}
+      {/* ALERTA FLUTUANTE (TOAST)                    */}
+      {/* ========================================= */}
+      {toastMessage && (
+        <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 z-[200]">
+          <div className="bg-slate-900 text-white px-6 py-3.5 rounded-full shadow-2xl flex items-center gap-3 border border-slate-700 animate-[bounce_0.3s_ease-out_1]">
+            <span className="text-emerald-400 text-xl" aria-hidden="true">✨</span>
+            <span className="font-bold text-sm tracking-wide">{toastMessage}</span>
+            <button 
+              onClick={() => setToastMessage("")}
+              className="text-slate-400 hover:text-white ml-2 transition-colors focus:outline-none"
+              aria-label="Fechar alerta"
+            >
+              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+        </div>
+      )}
       </main>
 
       <footer className="footer bg-slate-950 text-slate-400 pt-16 pb-8 px-4 border-t border-slate-800">
