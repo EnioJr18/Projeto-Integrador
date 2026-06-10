@@ -21,6 +21,7 @@ import Cadastro from "./pages/Cadastro.jsx";
 import DashboardImpacto from "./pages/DashboardImpacto.jsx";
 import PainelOrganizador from "./pages/PainelOrganizador.jsx";
 import ListaInscritos from './pages/ListaInscritos';
+import Chatbot from './Chatbot';
 import "./App.css";
 
 const CATEGORY_LABELS = {
@@ -466,6 +467,16 @@ const handleLogin = async ({ identifier, password }) => {
             />
           } />
         </Routes>
+      {/* ========================================= */}
+      {/* ASSISTENTE DE IA (CHATBOT FLUTUANTE)      */}
+      {/* ========================================= */}
+      <Chatbot />
+
+      {/* ========================================= */}
+      {/* ALERTA FLUTUANTE (TOAST) FICA AQUI FORA!  */}
+      {/* ========================================= */}
+
+
       {/* ========================================= */}
       {/* ALERTA FLUTUANTE (TOAST)                    */}
       {/* ========================================= */}
