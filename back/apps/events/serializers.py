@@ -122,13 +122,26 @@ class InscricaoSerializer(serializers.ModelSerializer):
     participante = serializers.HiddenField(
         default=serializers.CurrentUserDefault()
     )
+    # Trocamos para SerializerMethodField para termos controle total do que será enviado
+    participante_nome = serializers.SerializerMethodField()
+    participante_email = serializers.SerializerMethodField()
 
     class Meta:
         model = Inscricao
-        fields = ['id', 'evento', 'participante', 'status', 'data_inscricao']
+        fields = ['id', 'evento', 'participante', 'participante_nome', 'participante_email', 'status', 'data_inscricao']
         read_only_fields = ['status', 'data_inscricao']
         
         validators = []
+
+    # Se o usuário não tiver first_name, tentamos pegar o username. Se não tiver, chamamos de Voluntário Anônimo.
+    def get_participante_nome(self, obj):
+        return obj.participante.first_name or getattr(obj.participante, 'username', 'Voluntário Anônimo')
+
+    def get_participante_email(self, obj):
+        return obj.participante.email or "E-mail não cadastrado"
+
+    def get_participante_email(self, obj):
+        return obj.participante.email or "E-mail não cadastrado"
 
     def create(self, validated_data):
         evento = validated_data['evento']

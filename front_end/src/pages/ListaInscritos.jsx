@@ -41,22 +41,55 @@ const ListaInscritos = () => {
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+         <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200">
-                <th className="p-4 font-bold text-slate-600">ID da Inscrição</th>
-                <th className="p-4 font-bold text-slate-600">Data da Inscrição</th>
-                <th className="p-4 font-bold text-slate-600">Status</th>
+                <th className="p-4 font-bold text-slate-600">Voluntário</th>
+                <th className="p-4 font-bold text-slate-600 hidden sm:table-cell">E-mail de Contato</th>
+                <th className="p-4 font-bold text-slate-600 text-center">Data</th>
+                <th className="p-4 font-bold text-slate-600 text-right">Status</th>
               </tr>
             </thead>
             <tbody>
               {inscritos.map((insc, index) => (
-                <tr key={index} className="border-b border-slate-100 hover:bg-slate-50">
-                  <td className="p-4 text-slate-700 font-medium">#{insc.id}</td>
-                  <td className="p-4 text-slate-500">
+                <tr key={index} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                  
+                  {/* Coluna: Nome do Voluntário */}
+                  <td className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-lg">
+                        {/* Pega a primeira letra, ou 'V' se não tiver */}
+                        {insc.participante_nome ? insc.participante_nome.charAt(0).toUpperCase() : 'V'}
+                      </div>
+                      <div>
+                        <p className="text-slate-800 font-bold">
+                          {insc.participante_nome || `Inscrição #${insc.id}`}
+                        </p>
+                        <p className="text-slate-500 text-sm sm:hidden">
+                          {insc.participante_email || 'E-mail não informado'}
+                        </p>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Coluna: E-mail */}
+                  <td className="p-4 text-slate-600 hidden sm:table-cell">
+                    {insc.participante_email || 'Não informado'}
+                  </td>
+
+                  {/* Coluna: Data */}
+                  <td className="p-4 text-slate-500 text-center">
                     {new Date(insc.data_inscricao).toLocaleDateString('pt-BR')}
                   </td>
-                  <td className="p-4 text-emerald-600 font-bold">Confirmado</td>
+
+                  {/* Coluna: Status */}
+                  <td className="p-4 text-right">
+                    <span className="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                      Confirmado
+                    </span>
+                  </td>
+
                 </tr>
               ))}
             </tbody>

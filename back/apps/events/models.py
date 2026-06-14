@@ -17,6 +17,7 @@ class EventoSocial(models.Model):
     ]
 
     titulo = models.CharField(max_length=200)
+    
     descricao = models.TextField()
 
     endereco = models.CharField(max_length=255, blank=True)
